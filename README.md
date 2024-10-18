@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # smoothPortfolio
 
 smoothPortfolio
