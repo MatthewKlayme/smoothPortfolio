@@ -1,0 +1,11 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  background-color: aquamarine;
+  overflow: hidden;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
