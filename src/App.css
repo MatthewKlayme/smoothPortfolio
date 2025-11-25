@@ -1,0 +1,458 @@
+/* src/App.css */
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #20284a, #050509);
+  color: #f8f0d8;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.game-frame {
+  background: #0a0a14;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 4px solid #3e2b87;
+}
+
+.game-header {
+  padding: 4px 6px 6px;
+  border-bottom: 2px solid #3e2b87;
+}
+
+.game-title {
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.game-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.hud-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f0f1f;
+  border: 2px solid #3e2b87;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.45);
+}
+
+.level-hud {
+  display: grid;
+  grid-template-columns: auto;
+  gap: 4px;
+  min-width: 240px;
+}
+
+.level-label {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.xp-track {
+  position: relative;
+  height: 14px;
+  width: 100%;
+  background: #1d2445;
+  border: 2px solid #f8f0d8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #49ffb6, #4f9dfc);
+  transition: width 160ms ease;
+}
+
+.xp-caption {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.inventory-hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  background: #131428;
+  border: 2px solid #f8f0d8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 3px 0 #050509;
+}
+
+.inventory-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inventory-hint {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.world-wrapper {
+  margin-top: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.game-world {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  background-repeat: repeat;
+  background-size: contain;
+  background-position: top left;
+}
+
+.world-info-panel {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  max-width: 260px;
+  padding: 6px 8px;
+  background: rgba(10, 10, 20, 0.8);
+  border: 2px solid #f8f0d8;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.world-info-panel h2 {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.game-footer {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.footer-hint {
+  opacity: 0.8;
+}
+
+.footer-button {
+  background: #2059c9;
+  color: #f8f0d8;
+  border: 2px solid #f8f0d8;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.footer-button:hover {
+  filter: brightness(1.1);
+}
+
+/* Dialog overlay (GBA-style info window) */
+
+.dialog-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none; /* let player still move if you want */
+}
+
+.dialog-box {
+  width: 90%;
+  max-width: 520px;
+  margin-bottom: 8px;
+  background: #0a0a14;
+  border: 3px solid #f8f0d8;
+  border-radius: 8px;
+  box-shadow: 0 4px 0 #050509;
+  padding: 6px 8px;
+  font-size: 11px;
+  pointer-events: auto;
+}
+
+.dialog-title {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  color: #f8f0d8;
+}
+
+.dialog-body {
+  margin-bottom: 4px;
+}
+
+.dialog-body p {
+  margin: 0;
+}
+
+.dialog-footer {
+  font-size: 9px;
+  opacity: 0.8;
+  text-align: right;
+}
+
+.inventory-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 220px;
+  background: rgba(12, 12, 24, 0.95);
+  border: 3px solid #f8f0d8;
+  border-radius: 10px;
+  box-shadow: 0 5px 0 #050509;
+  padding: 10px;
+  color: #f8f0d8;
+}
+
+.inventory-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.inventory-subtitle {
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f8f0d8;
+}
+
+.inventory-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.inventory-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: #1a1f3b;
+  border: 2px solid #3e2b87;
+  border-radius: 6px;
+}
+
+.inventory-empty {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.item-name {
+  letter-spacing: 0.04em;
+}
+
+.item-count {
+  background: #49ffb6;
+  color: #0a0a14;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+.badge-pill {
+  background: #2059c9;
+  color: #f8f0d8;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inventory-footer {
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.hud-message {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #f8f0d8;
+  border-radius: 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 4px 0 #050509;
+  animation: pop 250ms ease;
+  z-index: 10;
+}
+
+@keyframes pop {
+  0% {
+    transform: translateX(-50%) scale(0.9);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.03) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
+/* HUB – soft green checkerboard (like grass/plaza) */
+.world-bg-nexus {
+  background-color: rgb(255, 255, 255);
+}
+
+/* MENESES – office carpet / tile floor */
+.world-bg-meneses {
+  background-image: repeating-linear-gradient(
+    0deg,
+    #f1e5d0 0px,
+    #f1e5d0 16px,
+    #e4d6c0 16px,
+    #e4d6c0 32px
+  );
+}
+
+/* EIT – dark tech grid (server room vibe) */
+.world-bg-eit {
+  background-color: #050812;
+  background-image: repeating-linear-gradient(
+    30deg,
+    #1c4ec1 0px,
+    #1c4ec1 32px,
+    #1e2f54 32px,
+    #1e2f54 64px
+  );
+}
+
+/* KARTOCARS – neon purple grid (retrowave road) */
+.world-bg-kartocars {
+  background-color: #120020;
+  background-image: repeating-linear-gradient(
+    -30deg,
+    #b90586 0px,
+    #7718bb 32px,
+    #1884ac 32px,
+    #1305b2 64px
+  );
+}
+
+/* (Optional) CHRONOSPEL – arcane runes floor */
+.world-bg-chronospel {
+  background-color: #0a0614;
+  background-image: repeating-linear-gradient(
+    0deg,
+    #6844cc 0px,
+    #6844cc 32px,
+    #21056d 32px,
+    #21056d 64px
+  );
+}
+
+/* (Optional) GJHMAIL – blue console grid floor */
+.world-bg-gjhmail {
+  background-color: #021018;
+  background-image: repeating-linear-gradient(
+      0deg,
+      #031b2b 0px,
+      #031b2b 16px,
+      #021520 16px,
+      #021520 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 255, 128, 0.25) 0px,
+      rgba(0, 255, 128, 0.25) 1px,
+      transparent 1px,
+      transparent 32px
+    );
+}
+
+.world-bg-university {
+  background-color: #101820;
+  background-image: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.06) 0px,
+      rgba(255, 255, 255, 0.06) 2px,
+      transparent 2px,
+      transparent 32px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(150, 200, 255, 0.08) 0px,
+      rgba(150, 200, 255, 0.08) 2px,
+      transparent 2px,
+      transparent 32px
+    );
+}
+
+.fade-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  animation: fadeInOut 300ms linear forwards;
+  pointer-events: none;
+  z-index: 999; /* above everything */
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blocked-zone {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.72);
+  outline: 2px dashed rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}

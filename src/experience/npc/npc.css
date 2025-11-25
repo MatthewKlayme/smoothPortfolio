@@ -1,0 +1,58 @@
+/* src/experience/npc/npc.css */
+
+.npc {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.npc-body {
+  width: 24px;
+  height: 24px;
+  background: #f3d78a;
+  border: 3px solid #3e2b87;
+  box-shadow: 0 3px 0 #050509;
+  image-rendering: pixelated;
+  animation: npcIdle 1.8s ease-in-out infinite;
+}
+
+.npc-label {
+  margin-top: 4px;
+  font-size: 10px;
+  background: rgba(10, 10, 20, 0.85);
+  border: 2px solid #f8f0d8;
+  border-radius: 6px;
+  padding: 1px 4px;
+  letter-spacing: 0.04em;
+}
+
+.npc-mentor .npc-body {
+  background: #9be7ff;
+  border-color: #2059c9;
+}
+
+.npc-guide .npc-body {
+  background: #ffd166;
+  border-color: #d44f0b;
+}
+
+.npc-lorekeeper .npc-body {
+  background: #c1ff72;
+  border-color: #3cb043;
+}
+
+@keyframes npcIdle {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

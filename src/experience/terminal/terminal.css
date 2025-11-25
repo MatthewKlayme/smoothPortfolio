@@ -1,0 +1,97 @@
+/* src/experience/terminal/terminal.css */
+
+.terminal {
+  position: absolute;
+  box-sizing: border-box;
+  border: 5px solid #d4d71e;
+  background: #0a0a14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  image-rendering: pixelated;
+  box-shadow: 0 4px 0 #050509;
+}
+
+.terminal-inner {
+  border: 3px solid #f8f0d8;
+  padding: 4px 6px;
+  background: #2059c9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.terminal-title {
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.terminal-hint {
+  font-size: 8px;
+  opacity: 0.7;
+}
+
+/* MENESES */
+
+.terminal-meneses {
+  border: 5px solid #4f64dc;
+}
+.terminal-meneses-extra {
+  border: 5px solid #56a5c4;
+}
+.terminal-meneses .terminal-inner {
+  background: #4f0bd8;
+}
+.terminal-meneses-extra .terminal-inner {
+  background: #ac87f6;
+}
+
+/* EIT CARE */
+
+.terminal-eit {
+  border: 5px solid #fbbd05;
+}
+
+.terminal-eit .terminal-inner {
+  background: #3cb043;
+}
+
+/* KARTOCARS */
+
+.terminal-kartocars {
+  border: 5px solid #fb05b9;
+}
+
+.terminal-kartocars .terminal-inner {
+  background: #ff5da2;
+}
+
+/* CHRONO SPEL */
+.terminal-chrono {
+  border: 5px solid #9d7518;
+}
+
+.terminal-chrono .terminal-inner {
+  background: #390368;
+}
+
+/* GJHMAIL */
+.terminal-gjhmail {
+  border: 5px solid #5cc266;
+}
+
+.terminal-gjhmail .terminal-inner {
+  background: #033418;
+}
+
+/* UNIVERSITY */
+.terminal-university {
+  border: 5px solid #d0d0d0;
+}
+
+.terminal-university .terminal-inner {
+  background: #fb0000;
+  color: #000;
+}

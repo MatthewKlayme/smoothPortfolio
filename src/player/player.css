@@ -1,0 +1,48 @@
+/* src/Player/player.css */
+
+.player {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+  border-radius: 4px;
+  box-shadow: 0 4px 0 #050509;
+  border: 3px solid #0a0a14;
+}
+
+.player--nexus {
+  background: #f8f0d8;
+  border-color: #3e2b87;
+}
+
+.player--meneses {
+  background: #3cb043;
+  border-color: #2059c9;
+}
+
+.player--eit {
+  background: #b03c4f;
+  border-color: #4b8fce;
+}
+
+.player--kartocars {
+  background: #b939f4;
+  border-color: #f365e7;
+}
+
+.player--chronospel {
+  background: #b939f4;
+  border-color: #f365e7;
+}
+
+.player--gjhmail {
+  background: #b939f4;
+  border: 15px solid;
+  border-color: #f365e7;
+}
+
+.player--university {
+  background: #4a9df6;
+  border-color: #2c5fa8;
+}

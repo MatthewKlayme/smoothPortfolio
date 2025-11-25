@@ -1,0 +1,77 @@
+/* src/Experience/experience.css */
+
+.portal {
+  position: absolute;
+  box-sizing: border-box;
+  border: 4px solid #3e2b87;
+  background: #f8f0d8;
+  display: flex-col;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  image-rendering: pixelated;
+  box-shadow: 0 4px 0 #050509;
+  transition: transform 120ms ease, filter 120ms ease, opacity 160ms ease;
+}
+
+.portal-inner {
+  border: 3px solid #2059c9;
+  padding: 4px 8px;
+  background: #78a6f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.portal-locked {
+  filter: grayscale(0.8) brightness(0.85);
+  opacity: 0.9;
+}
+
+.portal-lock-pill {
+  position: absolute;
+  top: -12px;
+  right: -6px;
+  background: #130429;
+  color: #f8f0d8;
+  border: 2px solid #f8f0d8;
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 0 #050509;
+}
+
+.portal:not(.portal-locked):hover {
+  transform: translateY(-2px);
+}
+
+.portal-label {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.portal-hint {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+/* You can customize per-portal if you want */
+.portal-meneses .portal-inner {
+  background: #f8f0d8;
+  border-color: #3e2b87;
+  color: black;
+}
+
+.portal-kartocars .portal-inner {
+  background: #ff5da2;
+  border-color: #f8f0d8;
+}
+
+.portal-university .portal-inner {
+  background: #ff0000;
+  color: #000;
+  border-color: #f8f0d8;
+}

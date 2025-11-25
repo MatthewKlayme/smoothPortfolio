@@ -1,0 +1,117 @@
+.timeline-marker {
+  position: absolute;
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(255, 226, 150, 0.3));
+  animation: float 2.6s ease-in-out infinite;
+}
+
+.timeline-pole {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeline-gem {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(145deg, #ffe8a3, #ffc979);
+  border: 3px solid #050509;
+  border-radius: 3px;
+  box-shadow: inset -3px -3px 0 #d97c2b, inset 3px 3px 0 #fff4c8,
+    0 4px 0 #050509, 0 0 16px rgba(255, 217, 117, 0.8);
+}
+
+.timeline-gem::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 4px;
+  height: 4px;
+  background: #fff9e2;
+  box-shadow: 6px 6px 0 rgba(255, 249, 226, 0.7);
+}
+
+.timeline-stick {
+  width: 12px;
+  height: 34px;
+  background: linear-gradient(180deg, #63d8ff 0%, #3e82ff 100%);
+  border: 3px solid #050509;
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.2),
+    inset -3px 0 0 rgba(0, 0, 0, 0.25);
+}
+
+.timeline-foot {
+  width: 32px;
+  height: 12px;
+  background: #f8f0d8;
+  border: 3px solid #050509;
+  box-shadow: 0 3px 0 #050509, inset 0 4px 0 #d9d0b7;
+}
+
+.timeline-year-badge {
+  position: relative;
+  padding: 6px 10px 5px;
+  background: #111426;
+  border: 3px solid #f8f0d8;
+  box-shadow: 0 4px 0 #050509, 0 0 0 3px #3e2b87;
+  text-transform: uppercase;
+}
+
+.timeline-year-badge::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 9px;
+  background: #111426;
+  border: 3px solid #f8f0d8;
+  border-bottom: 0;
+  box-shadow: 0 -3px 0 #050509;
+}
+
+.timeline-year {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: black;
+  text-shadow: 0 1px 0 #050509;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.timeline-line {
+  position: absolute;
+  top: 948px; /* baseline for the markers */
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(#050509, #050509) top/100% 2px no-repeat,
+    repeating-linear-gradient(
+      90deg,
+      #f8f0d8 0 16px,
+      #7dd0ff 16px 26px,
+      #3e2b87 26px 32px,
+      #1a1c33 32px 40px
+    );
+  box-shadow: 0 4px 0 #050509, 0 0 12px rgba(97, 210, 255, 0.35);
+}

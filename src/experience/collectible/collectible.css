@@ -1,0 +1,39 @@
+/* src/experience/collectible/collectible.css */
+
+.collectible {
+  position: absolute;
+  box-sizing: border-box;
+  border: 3px solid #f8f0d8;
+  background: radial-gradient(circle at 50% 30%, #ffe066, #ff8c42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0a14;
+  font-weight: 800;
+  font-size: 12px;
+  box-shadow: 0 4px 0 #050509, 0 0 10px rgba(255, 224, 102, 0.65);
+  border-radius: 6px;
+  animation: collectiblePulse 1.6s ease-in-out infinite;
+}
+
+.collectible--got {
+  opacity: 0.35;
+  filter: grayscale(1);
+  animation: none;
+}
+
+.collectible-inner {
+  transform: translateY(-1px);
+}
+
+@keyframes collectiblePulse {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
