@@ -18,11 +18,14 @@ export const Player = ({
   const [spacePressed, setSpacePressed] = useState(false);
   const velocityRef = useRef({ top: 0, left: 0 });
   const animationFrameId = useRef(null);
+  const posRef = useRef(position);
   const size = 32;
 
   useEffect(() => {
     if (!initialPosition) return;
-    setPosition({ top: initialPosition.y, left: initialPosition.x });
+    const newPos = { top: initialPosition.y, left: initialPosition.x };
+    posRef.current = newPos;
+    setPosition(newPos);
   }, [initialPosition?.x, initialPosition?.y]);
 
   const handleKeyDown = (event) => {
@@ -61,6 +64,7 @@ export const Player = ({
     const updatePosition = () => {
       const acceleration = 0.5;
       const friction = 0.92;
+      const prev = posRef.current;
 
       velocityRef.current = {
         top: velocityRef.current.top * friction,
@@ -77,45 +81,37 @@ export const Player = ({
         velocityRef.current.left += acceleration;
 
       if (keysPressed.has(" ") && !spacePressed) {
-        onSpace?.({ x: position.left, y: position.top });
+        onSpace?.();
         setSpacePressed(true);
       }
 
-      setPosition((prev) => {
-        const nextLeft = Math.max(
-          0,
-          Math.min(prev.left + velocityRef.current.left, worldWidth - size)
-        );
-        const nextTop = Math.max(
-          0,
-          Math.min(prev.top + velocityRef.current.top, worldHeight - size)
-        );
+      const nextLeft = Math.max(
+        0,
+        Math.min(prev.left + velocityRef.current.left, worldWidth - size)
+      );
+      const nextTop = Math.max(
+        0,
+        Math.min(prev.top + velocityRef.current.top, worldHeight - size)
+      );
 
-        let finalLeft = nextLeft;
-        let finalTop = nextTop;
+      let finalLeft = nextLeft;
+      let finalTop = nextTop;
 
-        // resolve X separately
-        if (collides(nextLeft, prev.top)) {
-          finalLeft = prev.left;
-        }
+      if (collides(nextLeft, prev.top)) {
+        finalLeft = prev.left;
+      }
+      if (collides(finalLeft, nextTop)) {
+        finalTop = prev.top;
+      }
+      if (collides(finalLeft, finalTop)) {
+        finalLeft = prev.left;
+        finalTop = prev.top;
+      }
 
-        // resolve Y separately
-        if (collides(finalLeft, nextTop)) {
-          finalTop = prev.top;
-        }
-
-        // if both blocked, stay put
-        if (collides(finalLeft, finalTop)) {
-          finalLeft = prev.left;
-          finalTop = prev.top;
-        }
-
-        const newPos = { top: finalTop, left: finalLeft };
-
-        onMove?.({ x: newPos.left, y: newPos.top });
-
-        return newPos;
-      });
+      const newPos = { top: finalTop, left: finalLeft };
+      posRef.current = newPos;
+      setPosition(newPos);
+      onMove?.({ x: newPos.left, y: newPos.top });
     };
 
     const animate = () => {
@@ -132,17 +128,7 @@ export const Player = ({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [
-    keysPressed,
-    spacePressed,
-    worldWidth,
-    worldHeight,
-    onSpace,
-    onMove,
-    position.left,
-    position.top,
-    collides,
-  ]);
+  }, [keysPressed, spacePressed, worldWidth, worldHeight, onSpace, onMove, collides]);
 
   return (
     <div

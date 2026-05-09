@@ -9,6 +9,7 @@ import { Npc } from "./experience/npc/Npc";
 import { HudBar } from "./ui/HudBar";
 import { InventoryPanel } from "./ui/InventoryPanel";
 import { DialogOverlay } from "./ui/DialogOverlay";
+import { QuizOverlay } from "./experience/quiz/QuizOverlay";
 
 import {
   VIEWPORT_WIDTH,
@@ -38,6 +39,8 @@ const App = () => {
   const [unlockedWorlds, setUnlockedWorlds] = useState(new Set(STARTER_WORLD));
   const [collected, setCollected] = useState(new Set());
   const [worldBadges, setWorldBadges] = useState(new Set());
+  const [leftKey, setLeftKey] = useState(false);
+  const [rightKey, setRightKey] = useState(false);
   const [hudMessage, setHudMessage] = useState("");
   const hudTimeoutRef = useRef(null);
   const audioCtxRef = useRef(null);
@@ -229,6 +232,8 @@ const App = () => {
 
   const portalRequirementMet = useCallback(
     (portal) => {
+      if (portal.requiresBothKeys) return leftKey && rightKey;
+
       const hasRequirement = portal.requiresLevel || portal.requiresAllBadges;
       if (!hasRequirement) return false;
 
@@ -241,11 +246,18 @@ const App = () => {
 
       return levelMet && badgesMet;
     },
-    [level, totalBadgeWorlds, worldBadges]
+    [level, totalBadgeWorlds, worldBadges, leftKey, rightKey]
   );
 
   const portalLockReason = useCallback(
     (portal) => {
+      if (portal.requiresBothKeys) {
+        const parts = [];
+        if (!leftKey) parts.push("left key half");
+        if (!rightKey) parts.push("right key half");
+        return parts.length ? parts.join(" + ") : null;
+      }
+
       const needsLevel =
         portal.requiresLevel && level < portal.requiresLevel
           ? `Lv${portal.requiresLevel}`
@@ -260,7 +272,7 @@ const App = () => {
       if (needsBadges) return needsBadges;
       return null;
     },
-    [level, totalBadgeWorlds, worldBadges]
+    [level, totalBadgeWorlds, worldBadges, leftKey, rightKey]
   );
 
   const handleSpace = () => {
@@ -312,7 +324,7 @@ const App = () => {
           pushHudMessage(`Unlocked ${hitPortal.label}!`);
           playBeep(680, 0.1);
         } else if (!alreadyUnlocked && !conditionUnlocked) {
-          if (hitPortal.requiresLevel || hitPortal.requiresAllBadges) {
+          if (hitPortal.requiresLevel || hitPortal.requiresAllBadges || hitPortal.requiresBothKeys) {
             if (!hitPortal.hideRequirementHint) {
               const reason = portalLockReason(hitPortal);
               pushHudMessage(
@@ -367,6 +379,11 @@ const App = () => {
     if (hitTerminal) {
       setActiveTerminal(hitTerminal);
       handleTerminalRead(hitTerminal);
+      if (hitTerminal.awardRightKey && !rightKey) {
+        setRightKey(true);
+        pushHudMessage("Right Half of the Master Key obtained!");
+        playBeep(900, 0.2);
+      }
     }
   };
 
@@ -399,6 +416,19 @@ const App = () => {
       setActiveTerminal(null);
     });
   }, [returnPos]);
+
+  const handleQuizSuccess = useCallback(() => {
+    setLeftKey(true);
+    pushHudMessage("Left Half of the Master Key obtained!");
+    playBeep(900, 0.2);
+    handleBackToHub();
+  }, [handleBackToHub, pushHudMessage, playBeep]);
+
+  const handleQuizFail = useCallback(() => {
+    pushHudMessage("Trial failed.");
+    playBeep(180, 0.3);
+    handleBackToHub();
+  }, [handleBackToHub, pushHudMessage, playBeep]);
 
   // Listen for keyboard Backspace to return to nexus
   useEffect(() => {
@@ -520,19 +550,27 @@ const App = () => {
                 initialPosition={playerSpawn}
                 skin={world.playerSkin}
                 onSpace={handleSpace}
-                onMove={(pos) => setPlayerPos(pos)}
+                onMove={setPlayerPos}
               />
             </div>
             {/* end game-world */}
           </div>
           {/* end world-container */}
           <div className="crt-overlay" aria-hidden="true" />
+          <QuizOverlay
+            active={currentWorldId === "trial10"}
+            alreadyComplete={leftKey}
+            onSuccess={handleQuizSuccess}
+            onFail={handleQuizFail}
+          />
           <DialogOverlay terminal={activeTerminal} />
           <InventoryPanel
             open={inventoryOpen}
             keys={keys}
             worldBadges={worldBadges}
             worldsMap={WORLDS}
+            leftKey={leftKey}
+            rightKey={rightKey}
           />
           {hudMessage && <div className="hud-message">{hudMessage}</div>}
           {isFading && <div className="fade-overlay"></div>}

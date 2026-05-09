@@ -3,20 +3,35 @@ export const InventoryPanel = ({
   keys,
   worldBadges,
   worldsMap,
+  leftKey,
+  rightKey,
 }) => {
   if (!open) return null;
+
+  const hasItems = keys > 0 || leftKey || rightKey;
 
   return (
     <div className="inventory-panel">
       <div className="inventory-title">Inventory</div>
       <div className="inventory-items">
-        {keys > 0 ? (
+        {!hasItems && <div className="inventory-empty">No items yet.</div>}
+        {keys > 0 && (
           <div className="inventory-item">
             <span className="item-name">Warp Key</span>
             <span className="item-count">x{keys}</span>
           </div>
-        ) : (
-          <div className="inventory-empty">No items yet.</div>
+        )}
+        {leftKey && (
+          <div className="inventory-item">
+            <span className="item-name">Master Key — Left Half</span>
+            <span className="badge-pill">✦</span>
+          </div>
+        )}
+        {rightKey && (
+          <div className="inventory-item">
+            <span className="item-name">Master Key — Right Half</span>
+            <span className="badge-pill">✦</span>
+          </div>
         )}
       </div>
       <div className="inventory-subtitle">Badges</div>
