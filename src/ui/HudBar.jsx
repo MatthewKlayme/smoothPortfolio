@@ -1,20 +1,25 @@
-export const HudBar = ({ level, xp, xpPerLevel, keys }) => {
+export const HudBar = ({ level, xp, xpPerLevel, keys, worldTitle }) => {
   const xpPct = Math.min(100, Math.round((xp / xpPerLevel) * 100));
 
   return (
     <div className="hud-bar">
-      <div className="level-hud">
-        <div className="level-label">Level {level}</div>
-        <div className="xp-track">
-          <div className="xp-fill" style={{ width: `${xpPct}%` }} />
+      <div className="hud-top-row">
+        <div className="hud-playing">
+          <div className="hud-playing-label">PLAYING</div>
+          <div className="hud-playing-world">{worldTitle}</div>
         </div>
-        <div className="xp-caption">Read terminals to earn XP + keys</div>
+        <div className="hud-keys">
+          <span>KEYS</span>
+          <span className="hud-keys-num">{keys}</span>
+          <span className="hud-keys-hint">ENTER = inventory</span>
+        </div>
       </div>
-      <div className="inventory-hud">
-        <div className="inventory-count">
-          Keys: <strong>{keys}</strong>
+      <div className="hud-level-row">
+        <span className="hud-lv">LV{level}</span>
+        <div className="hud-level-bar">
+          <div className="hud-level-fill" style={{ width: `${xpPct}%` }} />
         </div>
-        <div className="inventory-hint">Press ENTER to open inventory</div>
+        <span className="hud-level-hint">read terminals for XP</span>
       </div>
     </div>
   );
