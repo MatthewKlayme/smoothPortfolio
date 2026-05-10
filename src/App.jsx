@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo, useLayoutEffect } from "react";
 import "./App.css";
 import { Player } from "./player/Player";
 import { Terminal } from "./experience/terminal/Terminal";
@@ -23,6 +23,18 @@ const XP_PER_LEVEL = 100;
 const XP_PER_TERMINAL = 25;
 const STARTER_WORLD = ["meneses", "university"];
 
+const mapControlKey = (key) => {
+  const k = (key || "").toLowerCase();
+  if (k === "arrowup"    || k === "w") return "up";
+  if (k === "arrowdown"  || k === "s") return "down";
+  if (k === "arrowleft"  || k === "a") return "left";
+  if (k === "arrowright" || k === "d") return "right";
+  if (k === " ")         return "a";
+  if (k === "backspace") return "b";
+  if (k === "enter")     return "start";
+  return null;
+};
+
 const App = () => {
   const [currentWorldId, setCurrentWorldId] = useState("nexus");
   const [playerSpawn, setPlayerSpawn] = useState(WORLDS.nexus.spawn);
@@ -42,8 +54,51 @@ const App = () => {
   const [leftKey, setLeftKey] = useState(false);
   const [rightKey, setRightKey] = useState(false);
   const [hudMessage, setHudMessage] = useState("");
+  const [pressedKeys, setPressedKeys] = useState({});
   const hudTimeoutRef = useRef(null);
   const audioCtxRef = useRef(null);
+  const handheldRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const fit = () => {
+      const el = handheldRef.current;
+      if (!el) return;
+      el.style.transform = "";
+      const s = Math.min(
+        (window.innerWidth * 0.97) / el.offsetWidth,
+        (window.innerHeight * 0.97) / el.offsetHeight,
+        1
+      );
+      el.style.transform = `scale(${s})`;
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
+
+  useEffect(() => {
+    const onDown = (e) => {
+      const k = mapControlKey(e.key);
+      if (!k || e.repeat) return;
+      setPressedKeys((p) => (p[k] ? p : { ...p, [k]: true }));
+    };
+    const onUp = (e) => {
+      const k = mapControlKey(e.key);
+      if (!k) return;
+      setPressedKeys((p) => {
+        if (!p[k]) return p;
+        const next = { ...p };
+        delete next[k];
+        return next;
+      });
+    };
+    window.addEventListener("keydown", onDown);
+    window.addEventListener("keyup", onUp);
+    return () => {
+      window.removeEventListener("keydown", onDown);
+      window.removeEventListener("keyup", onUp);
+    };
+  }, []);
 
   const world = WORLDS[currentWorldId];
   const worldWidth = world.width ?? WORLD_WIDTH;
@@ -445,149 +500,174 @@ const App = () => {
 
   return (
     <div className="app-root">
-      <div className="game-frame">
-        <header className="game-header">
-          <h1 className="game-title">Playing: Matthew-Portfolio</h1>
-          <p className="game-subtitle">{world.title}</p>
-        </header>
+      <div className="handheld" ref={handheldRef}>
+        {/* Shoulder buttons */}
+        <div className="shoulder shoulder-l"><span>L</span></div>
+        <div className="shoulder shoulder-r"><span>R</span></div>
 
-        <HudBar level={level} xp={xp} xpPerLevel={XP_PER_LEVEL} keys={keys} />
-
-        {/* VIEWPORT */}
-        <div
-          className="viewport"
-          style={{
-            width: VIEWPORT_WIDTH,
-            height: VIEWPORT_HEIGHT,
-            overflow: "hidden",
-            position: "relative",
-          }}
-        >
-          {/* WORLD CONTAINER — moves with camera */}
-          <div
-            className="world-container"
-            style={{
-              width: worldWidth,
-              height: worldHeight,
-              position: "absolute",
-              transform: `translate(${-camera.x}px, ${-camera.y}px)`,
-            }}
-          >
-            {/* ACTUAL GAME WORLD (relative container for terminals/player/portals) */}
-            {/* TIMELINE BASE LINE */}
-            {currentWorldId === "nexus" && <div className="timeline-line" />}
-            <div className={`game-world ${world.backgroundClass}`}>
-              {/* TIMELINE (only in nexus) */}
-              {currentWorldId === "nexus" &&
-                world.timeline?.map((t, i) => (
-                  <TimelineMarker key={i} year={t.year} x={t.x} />
-                ))}
-
-              {/* BLOCKED ZONES VISUALS */}
-              {world.blockedZones &&
-                world.blockedZones.map((zone, idx) => (
-                  <div
-                    key={`${currentWorldId}-blocked-${idx}`}
-                    className="blocked-zone"
-                    style={{
-                      left: zone.x,
-                      top: zone.y,
-                      width: zone.width,
-                      height: zone.height,
-                    }}
-                  />
-                ))}
-
-              {/* PORTALS (only in nexus) */}
-              {currentWorldId === "nexus" &&
-                world.portals?.map((portal) => (
-                  <ExperiencePortal
-                    key={portal.id}
-                    portal={portal}
-                    locked={
-                      !unlockedWorlds.has(portal.id) &&
-                      !portalRequirementMet(portal)
-                    }
-                    lockReason={
-                      portal.hideRequirementHint ? null : portalLockReason(portal)
-                    }
-                    silentLock={portal.hideRequirementHint}
-                    keysAvailable={keys}
-                  />
-                ))}
-
-              {/* NPCs */}
-              {world.npcs &&
-                world.npcs.map((npc) => (
-                  <Npc key={`${npc.id}-${npc.x}-${npc.y}`} npc={npc} />
-                ))}
-
-              {/* TERMINALS (resume stations) */}
-              {world.terminals &&
-                world.terminals.map((terminal) => (
-                  <Terminal
-                    key={`${terminal.id}-${terminal.x}-${terminal.y}`}
-                    terminal={terminal}
-                  />
-                ))}
-
-              {/* COLLECTIBLES */}
-              {world.collectibles &&
-                world.collectibles.map((col) => (
-                  <Collectible
-                    key={`${currentWorldId}-${col.id}-${col.x}-${col.y}`}
-                    collectible={col}
-                    collected={collected.has(`${currentWorldId}-${col.id}`)}
-                  />
-                ))}
-
-              {/* PLAYER */}
-
-              <Player
-                worldWidth={worldWidth}
-                worldHeight={worldHeight}
-                blockedZones={world.blockedZones}
-                initialPosition={playerSpawn}
-                skin={world.playerSkin}
-                onSpace={handleSpace}
-                onMove={setPlayerPos}
-              />
-            </div>
-            {/* end game-world */}
+        {/* Brand strip above screen */}
+        <div className="brand-area">
+          <div className="power">
+            <div className="power-led" />
+            <div className="power-label">POWER</div>
           </div>
-          {/* end world-container */}
-          <div className="crt-overlay" aria-hidden="true" />
-          <QuizOverlay
-            active={currentWorldId === "trial10"}
-            alreadyComplete={leftKey}
-            onSuccess={handleQuizSuccess}
-            onFail={handleQuizFail}
-          />
-          <DialogOverlay terminal={activeTerminal} />
-          <InventoryPanel
-            open={inventoryOpen}
-            keys={keys}
-            worldBadges={worldBadges}
-            worldsMap={WORLDS}
-            leftKey={leftKey}
-            rightKey={rightKey}
-          />
-          {hudMessage && <div className="hud-message">{hudMessage}</div>}
-          {isFading && <div className="fade-overlay"></div>}
+          <div className="brand-top">PORTABLE PORTFOLIO</div>
+          <div className="brand-spacer" />
         </div>
 
-        <footer className="game-footer">
-          <span className="footer-hint">
-            Move with WASD / Arrow keys · SPACE to interact · ENTER for
-            inventory
-          </span>
+        {/* Screen recess: HUD + viewport + footer hint */}
+        <div className="screen-recess">
+          <HudBar level={level} xp={xp} xpPerLevel={XP_PER_LEVEL} keys={keys} worldTitle={world.title} />
 
-          {currentWorldId !== "nexus" && (
-            <button className="footer-button" onClick={handleBackToHub}>
-              ← Back
-            </button>
-          )}
-        </footer>
+          <div
+            className="viewport"
+            style={{
+              width: VIEWPORT_WIDTH,
+              height: VIEWPORT_HEIGHT,
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <div
+              className="world-container"
+              style={{
+                width: worldWidth,
+                height: worldHeight,
+                position: "absolute",
+                transform: `translate(${-camera.x}px, ${-camera.y}px)`,
+              }}
+            >
+              {currentWorldId === "nexus" && <div className="timeline-line" />}
+              <div className={`game-world ${world.backgroundClass}`}>
+                {currentWorldId === "nexus" &&
+                  world.timeline?.map((t, i) => (
+                    <TimelineMarker key={i} year={t.year} x={t.x} />
+                  ))}
+
+                {world.blockedZones &&
+                  world.blockedZones.map((zone, idx) => (
+                    <div
+                      key={`${currentWorldId}-blocked-${idx}`}
+                      className="blocked-zone"
+                      style={{
+                        left: zone.x,
+                        top: zone.y,
+                        width: zone.width,
+                        height: zone.height,
+                      }}
+                    />
+                  ))}
+
+                {currentWorldId === "nexus" &&
+                  world.portals?.map((portal) => (
+                    <ExperiencePortal
+                      key={portal.id}
+                      portal={portal}
+                      locked={
+                        !unlockedWorlds.has(portal.id) &&
+                        !portalRequirementMet(portal)
+                      }
+                      lockReason={
+                        portal.hideRequirementHint ? null : portalLockReason(portal)
+                      }
+                      silentLock={portal.hideRequirementHint}
+                      keysAvailable={keys}
+                    />
+                  ))}
+
+                {world.npcs &&
+                  world.npcs.map((npc) => (
+                    <Npc key={`${npc.id}-${npc.x}-${npc.y}`} npc={npc} />
+                  ))}
+
+                {world.terminals &&
+                  world.terminals.map((terminal) => (
+                    <Terminal
+                      key={`${terminal.id}-${terminal.x}-${terminal.y}`}
+                      terminal={terminal}
+                    />
+                  ))}
+
+                {world.collectibles &&
+                  world.collectibles.map((col) => (
+                    <Collectible
+                      key={`${currentWorldId}-${col.id}-${col.x}-${col.y}`}
+                      collectible={col}
+                      collected={collected.has(`${currentWorldId}-${col.id}`)}
+                    />
+                  ))}
+
+                <Player
+                  worldWidth={worldWidth}
+                  worldHeight={worldHeight}
+                  blockedZones={world.blockedZones}
+                  initialPosition={playerSpawn}
+                  skin={world.playerSkin}
+                  onSpace={handleSpace}
+                  onMove={setPlayerPos}
+                />
+              </div>
+            </div>
+            <div className="crt-overlay" aria-hidden="true" />
+            <div className="glare" aria-hidden="true" />
+            <QuizOverlay
+              active={currentWorldId === "trial10"}
+              alreadyComplete={leftKey}
+              onSuccess={handleQuizSuccess}
+              onFail={handleQuizFail}
+            />
+            <DialogOverlay terminal={activeTerminal} />
+            <InventoryPanel
+              open={inventoryOpen}
+              keys={keys}
+              worldBadges={worldBadges}
+              worldsMap={WORLDS}
+              leftKey={leftKey}
+              rightKey={rightKey}
+            />
+            {hudMessage && <div className="hud-message">{hudMessage}</div>}
+            {isFading && <div className="fade-overlay"></div>}
+          </div>
+
+          <div className="hud-foot">
+            <span className="footer-hint">WASD / Arrows · SPACE interact · ENTER inventory</span>
+            {currentWorldId !== "nexus" && (
+              <button className="footer-button" onClick={handleBackToHub}>← Back</button>
+            )}
+          </div>
+        </div>
+
+        {/* Decorative controls */}
+        <div className="controls-bottom">
+          <div className="dpad">
+            <div className={`dpad-arm dpad-up${pressedKeys.up ? " is-pressed" : ""}`} />
+            <div className={`dpad-arm dpad-down${pressedKeys.down ? " is-pressed" : ""}`} />
+            <div className={`dpad-arm dpad-left${pressedKeys.left ? " is-pressed" : ""}`} />
+            <div className={`dpad-arm dpad-right${pressedKeys.right ? " is-pressed" : ""}`} />
+            <div className="dpad-center" />
+          </div>
+          <div className="ss">
+            <div className="ss-pair">
+              <div className="ss-pill" />
+              <div className="ss-label">SELECT</div>
+            </div>
+            <div className="ss-pair">
+              <div className={`ss-pill${pressedKeys.start ? " is-pressed" : ""}`} />
+              <div className="ss-label">START</div>
+            </div>
+          </div>
+          <div className="ab-area">
+            <div className="ab">
+              <div className={`ab-btn ab-b${pressedKeys.b ? " is-pressed" : ""}`}><span>B</span></div>
+              <div className={`ab-btn ab-a${pressedKeys.a ? " is-pressed" : ""}`}><span>A</span></div>
+            </div>
+          </div>
+          <div className="speaker">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <div key={i} className="spk-dot" />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

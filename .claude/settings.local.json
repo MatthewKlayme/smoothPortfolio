@@ -6,7 +6,8 @@
       "PowerShell(Get-Process *)",
       "PowerShell(taskkill *)",
       "PowerShell($response = Invoke-WebRequest -Uri \"http://localhost:5173/src/main.jsx\" -UseBasicParsing; $response.Headers[\"Content-Type\"]; $response.Content.Substring\\(0, 200\\))",
-      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:5173/@react-refresh\" -UseBasicParsing; $r.Headers[\"Content-Type\"]; $r.StatusCode)"
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:5173/@react-refresh\" -UseBasicParsing; $r.Headers[\"Content-Type\"]; $r.StatusCode)",
+      "Bash(npx vite *)"
     ]
   }
 }
