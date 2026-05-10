@@ -54,8 +54,11 @@ const App = () => {
   const [leftKey, setLeftKey] = useState(false);
   const [rightKey, setRightKey] = useState(false);
   const [hudMessage, setHudMessage] = useState("");
-  const [pressedKeys, setPressedKeys] = useState({});
   const hudTimeoutRef = useRef(null);
+
+  // Refs for decorative control elements — toggled via classList, not state
+  const ctrlRefs = useRef({});
+  const setCtrl = (key, el) => { ctrlRefs.current[key] = el; };
   const audioCtxRef = useRef(null);
   const handheldRef = useRef(null);
 
@@ -77,20 +80,17 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    const press = (key, on) => {
+      ctrlRefs.current[key]?.classList.toggle("is-pressed", on);
+    };
     const onDown = (e) => {
       const k = mapControlKey(e.key);
       if (!k || e.repeat) return;
-      setPressedKeys((p) => (p[k] ? p : { ...p, [k]: true }));
+      press(k, true);
     };
     const onUp = (e) => {
       const k = mapControlKey(e.key);
-      if (!k) return;
-      setPressedKeys((p) => {
-        if (!p[k]) return p;
-        const next = { ...p };
-        delete next[k];
-        return next;
-      });
+      if (k) press(k, false);
     };
     window.addEventListener("keydown", onDown);
     window.addEventListener("keyup", onUp);
@@ -640,10 +640,10 @@ const App = () => {
         {/* Decorative controls */}
         <div className="controls-bottom">
           <div className="dpad">
-            <div className={`dpad-arm dpad-up${pressedKeys.up ? " is-pressed" : ""}`} />
-            <div className={`dpad-arm dpad-down${pressedKeys.down ? " is-pressed" : ""}`} />
-            <div className={`dpad-arm dpad-left${pressedKeys.left ? " is-pressed" : ""}`} />
-            <div className={`dpad-arm dpad-right${pressedKeys.right ? " is-pressed" : ""}`} />
+            <div className="dpad-arm dpad-up"    ref={(el) => setCtrl("up", el)} />
+            <div className="dpad-arm dpad-down"  ref={(el) => setCtrl("down", el)} />
+            <div className="dpad-arm dpad-left"  ref={(el) => setCtrl("left", el)} />
+            <div className="dpad-arm dpad-right" ref={(el) => setCtrl("right", el)} />
             <div className="dpad-center" />
           </div>
           <div className="ss">
@@ -652,14 +652,14 @@ const App = () => {
               <div className="ss-label">SELECT</div>
             </div>
             <div className="ss-pair">
-              <div className={`ss-pill${pressedKeys.start ? " is-pressed" : ""}`} />
+              <div className="ss-pill" ref={(el) => setCtrl("start", el)} />
               <div className="ss-label">START</div>
             </div>
           </div>
           <div className="ab-area">
             <div className="ab">
-              <div className={`ab-btn ab-b${pressedKeys.b ? " is-pressed" : ""}`}><span>B</span></div>
-              <div className={`ab-btn ab-a${pressedKeys.a ? " is-pressed" : ""}`}><span>A</span></div>
+              <div className="ab-btn ab-b" ref={(el) => setCtrl("b", el)}><span>B</span></div>
+              <div className="ab-btn ab-a" ref={(el) => setCtrl("a", el)}><span>A</span></div>
             </div>
           </div>
           <div className="speaker">
