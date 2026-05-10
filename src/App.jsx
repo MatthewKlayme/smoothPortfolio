@@ -23,6 +23,10 @@ const XP_PER_LEVEL = 100;
 const XP_PER_TERMINAL = 25;
 const STARTER_WORLD = ["meneses", "university"];
 
+const simulateKey = (key, down) => {
+  window.dispatchEvent(new KeyboardEvent(down ? "keydown" : "keyup", { key, bubbles: true }));
+};
+
 const mapControlKey = (key) => {
   const k = (key || "").toLowerCase();
   if (k === "arrowup"    || k === "w") return "up";
@@ -637,31 +641,68 @@ const App = () => {
           </div>
         </div>
 
-        {/* Decorative controls */}
+        {/* Interactive controls */}
         <div className="controls-bottom">
           <div className="dpad">
-            <div className="dpad-arm dpad-up"    ref={(el) => setCtrl("up", el)} />
-            <div className="dpad-arm dpad-down"  ref={(el) => setCtrl("down", el)} />
-            <div className="dpad-arm dpad-left"  ref={(el) => setCtrl("left", el)} />
-            <div className="dpad-arm dpad-right" ref={(el) => setCtrl("right", el)} />
+            {[
+              { cls: "dpad-up",    key: "ArrowUp",    ctrl: "up"    },
+              { cls: "dpad-down",  key: "ArrowDown",  ctrl: "down"  },
+              { cls: "dpad-left",  key: "ArrowLeft",  ctrl: "left"  },
+              { cls: "dpad-right", key: "ArrowRight", ctrl: "right" },
+            ].map(({ cls, key, ctrl }) => (
+              <div
+                key={ctrl}
+                className={`dpad-arm ${cls}`}
+                ref={(el) => setCtrl(ctrl, el)}
+                onPointerDown={() => simulateKey(key, true)}
+                onPointerUp={() => simulateKey(key, false)}
+                onPointerLeave={() => simulateKey(key, false)}
+                onPointerCancel={() => simulateKey(key, false)}
+              />
+            ))}
             <div className="dpad-center" />
           </div>
+
           <div className="ss">
             <div className="ss-pair">
               <div className="ss-pill" />
               <div className="ss-label">SELECT</div>
             </div>
             <div className="ss-pair">
-              <div className="ss-pill" ref={(el) => setCtrl("start", el)} />
+              <div
+                className="ss-pill"
+                ref={(el) => setCtrl("start", el)}
+                onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); simulateKey("Enter", true); }}
+                onPointerUp={() => simulateKey("Enter", false)}
+                onPointerCancel={() => simulateKey("Enter", false)}
+              />
               <div className="ss-label">START</div>
             </div>
           </div>
+
           <div className="ab-area">
             <div className="ab">
-              <div className="ab-btn ab-b" ref={(el) => setCtrl("b", el)}><span>B</span></div>
-              <div className="ab-btn ab-a" ref={(el) => setCtrl("a", el)}><span>A</span></div>
+              <div
+                className="ab-btn ab-b"
+                ref={(el) => setCtrl("b", el)}
+                onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); simulateKey("Backspace", true); }}
+                onPointerUp={() => simulateKey("Backspace", false)}
+                onPointerCancel={() => simulateKey("Backspace", false)}
+              >
+                <span>B</span>
+              </div>
+              <div
+                className="ab-btn ab-a"
+                ref={(el) => setCtrl("a", el)}
+                onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); simulateKey(" ", true); }}
+                onPointerUp={() => simulateKey(" ", false)}
+                onPointerCancel={() => simulateKey(" ", false)}
+              >
+                <span>A</span>
+              </div>
             </div>
           </div>
+
           <div className="speaker">
             {Array.from({ length: 15 }).map((_, i) => (
               <div key={i} className="spk-dot" />
